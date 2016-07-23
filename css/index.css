@@ -455,6 +455,10 @@ a:hover .mode-play-single > i.icon-one {
     margin-left: 10px;
 }
 
+.mobile-only {
+    display: none;
+}
+
 @media (max-width: 560px),(max-height: 560px) {
     .mobile-hidden {
         display: none;
