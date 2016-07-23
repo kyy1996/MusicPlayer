@@ -393,6 +393,7 @@ a:hover .mode-play-single > i.icon-one {
     padding-bottom: 10px;
     margin-bottom: 5px;
     padding-left: 5px;
+    font-weight: normal;
 }
 
 .play-list a {
@@ -414,6 +415,7 @@ a:hover .mode-play-single > i.icon-one {
     padding-left: 30px;
     margin-top: 5px;
     margin-bottom: 5px;
+    font-weight: normal;
 }
 
 .play-list-ul li::before {
