@@ -450,22 +450,21 @@ a:hover .mode-play-single > i.icon-one {
 
 .play-list-ul li.active .name::after {
     content: "正在播放";
-    font-size: 14px;
+    font-size: 0.8em;
     opacity: 0.6;
     margin-left: 10px;
+    line-height: 1;
 }
 
-.mobile-only {
-    display: none;
+@media (min-width: 561px) and (min-height: 561px) {
+    .mobile-only {
+        display: none !important;
+    }
 }
 
 @media (max-width: 560px),(max-height: 560px) {
     .mobile-hidden {
         display: none;
-    }
-
-    .mobile-only {
-        display: initial;
     }
 
     .lyric-container {
@@ -562,18 +561,14 @@ a:hover .mode-play-single > i.icon-one {
 
     .mode-play-single > i.icon-one {
         font-size: 12px;
-        top: 2px;
+        top: 1px;
         left: 10px;
         transform: scale(0.6);
         font-weight: bold;
     }
 
-    .mode-loop-single > i.icon-one {
-        font-size: 10px;
-    }
-
     a:hover .mode-play-single > i.icon-one {
-        color: inherit;
+        color: rgba(0, 0, 0, 0.6);
     }
 
     .mode-loop-single > i.icon-refresh, .mode-loop-list > i.icon-refresh {
@@ -583,7 +578,26 @@ a:hover .mode-play-single > i.icon-one {
     }
 
     .mode-loop-single > i.icon-one {
+        font-size: 10px;
+        left: 10px;
+        top: 1px;
+        transform: scale(0.7);
+    }
 
+    .mode-random > i.icon-random {
+        font-size: 16px;
+        top: 0;
+    }
+
+    .mode-play-list > i.icon-reorder {
+        font-size: 14px;
+        top: 1px;
+    }
+
+    .mode-loop-list > i.icon-reorder {
+        left: 8px;
+        top: 3px;
+        transform: scale(0.4);
     }
 
     .current-time, .total-time {
@@ -593,5 +607,14 @@ a:hover .mode-play-single > i.icon-one {
     .play-list {
         width: 100%;
         bottom: 100px;
+        font-size: 14px;
+    }
+
+    .play-list a {
+
+    }
+
+    .play-list-ul {
+        max-height: 200px;
     }
 }
