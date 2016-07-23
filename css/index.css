@@ -149,7 +149,7 @@ a > * {
 }
 
 .controller-btn > div {
-    flex: 0 0 33.33%;
+    flex: 1;
 }
 
 .left-btn-group {
@@ -194,7 +194,7 @@ a > * {
 }
 
 /*播放暂停按钮*/
-.controller-btn .center-btn-group a.play-btn, .controller-btn .center-btn-group a.pause-btn {
+.controller-btn a.play-btn, .controller-btn a.pause-btn {
     width: 80px;
     height: 80px;
 }
@@ -287,24 +287,24 @@ i.icon-one {
     opacity: 0;
 }
 
-.mode-loop-single > .icon-refresh, .mode-loop-list > .icon-refresh {
+.mode-loop-single > i.icon-refresh, .mode-loop-list > i.icon-refresh {
     font-size: 36px;
     left: 8px;
 }
 
-.mode-random > .icon-random {
+.mode-random > i.icon-random {
     font-size: 36px;
     left: 5px;
     top: 2px;
 }
 
-.mode-loop-list > .icon-reorder {
+.mode-loop-list > i.icon-reorder {
     top: 13px;
     left: 18px;
     font-size: 10px;
 }
 
-.mode-loop-single > .icon-one {
+.mode-loop-single > i.icon-one {
     font-size: 16px;
     left: 18px;
     top: 10px;
@@ -312,30 +312,30 @@ i.icon-one {
     opacity: 1;
 }
 
-a:hover .mode-loop-single > .icon-one {
+a:hover .mode-loop-single > i.icon-one {
     color: rgba(0, 0, 0, 0.6);
 }
 
-.mode-play-list > .icon-reorder {
+.mode-play-list > i.icon-reorder {
     font-size: 36px;
     left: 7px;
     top: 0;
 }
 
-.mode-play-single > .icon-play {
+.mode-play-single > i.icon-play {
     font-size: 36px;
     left: 10px;
     top: 0;
 }
 
-.mode-play-single > .icon-one {
+.mode-play-single > i.icon-one {
     font-size: 16px;
     left: 14px;
     top: 10px;
     opacity: 1;
 }
 
-a:hover .mode-play-single > .icon-one {
+a:hover .mode-play-single > i.icon-one {
     color: rgba(255, 255, 255, 0.6);
 }
 
@@ -456,6 +456,14 @@ a:hover .mode-play-single > .icon-one {
 }
 
 @media (max-width: 560px),(max-height: 560px) {
+    .mobile-hidden {
+        display: none;
+    }
+
+    .mobile-only {
+        display: initial;
+    }
+
     .lyric-container {
         font-size: 18px;
     }
@@ -477,11 +485,11 @@ a:hover .mode-play-single > .icon-one {
     .album {
         height: 80px;
         width: 80px;
-        flex: 0 0 80px;
+        flex: 0;
         margin: 0;
     }
 
-    .controller-btn a {
+    .controller-btn .center-btn-group a {
         width: 30px;
         height: 30px;
         border: 2px solid;
@@ -491,8 +499,13 @@ a:hover .mode-play-single > .icon-one {
         margin: 5px 10px;
     }
 
-    .controller-btn a {
+    .controller-btn .center-btn-group a {
         margin: auto 5px;
+        position: relative;
+    }
+
+    .center-btn-group .play-mode i {
+        /*font-size: 0;*/
     }
 
     .prev-btn > span::before, .next-btn > span::before {
@@ -511,7 +524,7 @@ a:hover .mode-play-single > .icon-one {
         margin-top: -5.07px;
     }
 
-    a.play-btn, a.pause-btn {
+    .controller-btn a.play-btn, .controller-btn a.pause-btn {
         width: 50px;
         height: 50px;
     }
@@ -530,7 +543,51 @@ a:hover .mode-play-single > .icon-one {
         transform: translate(13px, 11px);
     }
 
+    .center-btn-group .mobile-only.play-list-btn i {
+        font-size: 16px;
+        top: 5px;
+        left: 5px;
+        position: absolute;
+    }
+
+    .mode-play-single > i.icon-play {
+        font-size: 14px;
+        left: 9px;
+        top: 1px;
+    }
+
+    .mode-play-single > i.icon-one {
+        font-size: 12px;
+        top: 2px;
+        left: 10px;
+        transform: scale(0.6);
+        font-weight: bold;
+    }
+
+    .mode-loop-single > i.icon-one {
+        font-size: 10px;
+    }
+
+    a:hover .mode-play-single > i.icon-one {
+        color: inherit;
+    }
+
+    .mode-loop-single > i.icon-refresh, .mode-loop-list > i.icon-refresh {
+        font-size: 16px;
+        left: 6px;
+        top: 0;
+    }
+
+    .mode-loop-single > i.icon-one {
+
+    }
+
     .current-time, .total-time {
         bottom: 15px;
+    }
+
+    .play-list {
+        width: 100%;
+        bottom: 100px;
     }
 }

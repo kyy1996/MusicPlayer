@@ -139,7 +139,8 @@ function Lyric() {
     this.frequence = 25;
 
     function init(lyric) {
-        $(".lyric-container").html("<h3>载入歌词中……</h3>");
+        if (!lyric) $(".lyric-container").html("<h3>欢迎使用网页音乐播放器</h3>");
+        else $(".lyric-container").html("<h3>载入歌词中……</h3>");
         $.get(lyric, {}, function (lyric) {
             $(".lyric-container").html("");
 
@@ -230,8 +231,26 @@ $(".js-play-btn").click(function () {
             App.pause();
         }
 });
+$(".prev-btn").click(function (e) {
+    var $li = $("#play-list").find("li");
+    if ($li.first().is(".active")) {
+        $li.first().removeClass("active");
+        $li.last().click();
+    } else {
+        $li.filter(".active").prev().click();
+    }
+});
+$(".next-btn").click(function (e) {
+    var $li = $("#play-list").find("li");
+    if ($li.last().is(".active")) {
+        $li.last().removeClass("active");
+        $li.first().click();
+    } else {
+        $li.filter(".active").next().click();
+    }
+});
 
-$("#play-list-btn").click(function (e) {
+$(".play-list-btn").click(function (e) {
     var $list = $("#play-list");
     if ($list.is(":visible"))
         $(this).removeClass("active");
@@ -253,9 +272,8 @@ $("#play-list").find("li").click(function () {
     }
 });
 
-$("#play-mode").click(function () {
+$(".play-mode").click(function () {
     App.loop = (App.loop + 1) % 5;
-    console.log(App.loop);
     switch (App.loop) {
         case 0:
             //单曲播放
