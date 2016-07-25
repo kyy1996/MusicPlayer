@@ -141,62 +141,70 @@ function Lyric() {
     function init(lyric) {
         if (!lyric) $(".lyric-container").html("<h3>欢迎使用网页音乐播放器</h3>");
         else $(".lyric-container").html("<h3>载入歌词中……</h3>");
-        $.get(lyric, {}, function (lyric) {
-            $(".lyric-container").html("");
+        $.ajax({
+            url: lyric,
+            type: "get",
+            dataType: "text",
+            success: function (lyric) {
+                $(".lyric-container").html("");
 
-            var reg1 = /\[(\d+):(\d+)\.(\d+)]/ig;
-            var reg2 = /<(\d+),(\d+)>([^<]+)/ig;
-            _this.lyric_set = lyric.match(/(\[(\d+):(\d+)\.(\d+)]+((<\d+,\d+>)?[\S]* *)+)+/g);
-            _this.lyric_set.forEach(function (v, i) {
-                var start = reg1.exec(v) || reg1.exec(v);
-                if (!start || !start[3]) return true;
-                start = start[1] * 60 * 1000 + start[2] * 1000 + start[3] * 10 + 1;
-                var row;
-                var row_html = "<div class='lyric-row' data-start='" + start + "'><div class='lyric-wrapper'>";
-                var caption = "";
-                if (v.match(reg2))
-                    while (row = reg2.exec(v)) {
-                        caption += "<span data-start='" + row[1] + "' data-end='" + row[2] + "'>" + row[3] + "</span>";
-                    }
-                row_html += "<div class='lyric-before'>" + caption + "</div><div class='lyric-finished'>" + caption + "</div>";
-                row_html += "</div></div>";
-                $(row_html).appendTo(".lyric-container");
-            });
-            reset();
-            this.timer = setInterval(function () {
-                var current = Math.floor(App.getCurrentTime() * 1000) + _this.offset;
-                $(".lyric-row").each(function (i, v) {
-                    var $next = $(this).next(".lyric-row");
-                    if (Math.floor($(this).attr("data-start")) <= current && ($next.length == 0 || Math.floor($next.attr("data-start")) > current)) {
-                        //if (!$(this).prev().is(".lyric-row-finished"))$(this).prev().removeClass("lyric-current").addClass("lyric-row-finished").find(".lyric-finished").width("100%");
-                        if (!$(this).is(".lyric-current")/* && Math.floor($(this).find("span").last().attr("data-end")) > current*/) {
-                            $(this).addClass("lyric-current");
-                            _this.centerLyric();
+                var reg1 = /\[(\d+):(\d+)\.(\d+)]/ig;
+                var reg2 = /<(\d+),(\d+)>([^<]+)/ig;
+                _this.lyric_set = lyric.match(/(\[(\d+):(\d+)\.(\d+)]+((<\d+,\d+>)?[\S]* *)+)+/g);
+                _this.lyric_set.forEach(function (v, i) {
+                    var start = reg1.exec(v) || reg1.exec(v);
+                    if (!start || !start[3]) return true;
+                    start = start[1] * 60 * 1000 + start[2] * 1000 + start[3] * 10 + 1;
+                    var row;
+                    var row_html = "<div class='lyric-row' data-start='" + start + "'><div class='lyric-wrapper'>";
+                    var caption = "";
+                    if (v.match(reg2))
+                        while (row = reg2.exec(v)) {
+                            caption += "<span data-start='" + row[1] + "' data-end='" + row[2] + "'>" + row[3] + "</span>";
                         }
-                        if (Math.floor($(this).find("span").last().attr("data-end")) < current) {
-                            $(this)/*.addClass("lyric-row-finished").removeClass("lyric-current")*/.find(".lyric-finished").width("100%");
-                        } else if (_this.word) {
-                            var $cur = $(this);
-                            $cur.find(".lyric-finished>span").each(function () {
-                                if (Math.floor($(this).attr("data-start")) < current && Math.floor($(this).attr("data-end")) >= current) {
-                                    var left = $(this).offset().left - $(this).parent().offset().left;
-                                    var progress = (current - Math.floor($(this).attr("data-start"))) / (Math.floor($(this).attr("data-end")) - Math.floor($(this).attr("data-start")));
-                                    var width = left + progress * $(this).width();
-                                    if (width <= $(this).parent().parent().width()) {
-                                        $(this).parent().width(width);
-                                    }
-                                }
-                            });
-                        } else {
-                            $(this).find(".lyric-finished").width("100%");
-                        }
-                    } else if (Math.floor($(this).attr("data-start")) < current) {
-                        $(this).addClass("lyric-row-finished").removeClass("lyric-current").find(".lyric-finished").width("0");
-                    } else {
-                        $(this).removeClass("lyric-row-finished lyric-current").find(".lyric-finished").width(0);
-                    }
+                    row_html += "<div class='lyric-before'>" + caption + "</div><div class='lyric-finished'>" + caption + "</div>";
+                    row_html += "</div></div>";
+                    $(row_html).appendTo(".lyric-container");
                 });
-            }, _this.frequence);
+                reset();
+                this.timer = setInterval(function () {
+                    var current = Math.floor(App.getCurrentTime() * 1000) + _this.offset;
+                    $(".lyric-row").each(function (i, v) {
+                        var $next = $(this).next(".lyric-row");
+                        if (Math.floor($(this).attr("data-start")) <= current && ($next.length == 0 || Math.floor($next.attr("data-start")) > current)) {
+                            //if (!$(this).prev().is(".lyric-row-finished"))$(this).prev().removeClass("lyric-current").addClass("lyric-row-finished").find(".lyric-finished").width("100%");
+                            if (!$(this).is(".lyric-current")/* && Math.floor($(this).find("span").last().attr("data-end")) > current*/) {
+                                $(this).addClass("lyric-current");
+                                _this.centerLyric();
+                            }
+                            if (Math.floor($(this).find("span").last().attr("data-end")) < current) {
+                                $(this)/*.addClass("lyric-row-finished").removeClass("lyric-current")*/.find(".lyric-finished").width("100%");
+                            } else if (_this.word) {
+                                var $cur = $(this);
+                                $cur.find(".lyric-finished>span").each(function () {
+                                    if (Math.floor($(this).attr("data-start")) < current && Math.floor($(this).attr("data-end")) >= current) {
+                                        var left = $(this).offset().left - $(this).parent().offset().left;
+                                        var progress = (current - Math.floor($(this).attr("data-start"))) / (Math.floor($(this).attr("data-end")) - Math.floor($(this).attr("data-start")));
+                                        var width = left + progress * $(this).width();
+                                        if (width <= $(this).parent().parent().width()) {
+                                            $(this).parent().width(width);
+                                        }
+                                    }
+                                });
+                            } else {
+                                $(this).find(".lyric-finished").width("100%");
+                            }
+                        } else if (Math.floor($(this).attr("data-start")) < current) {
+                            $(this).addClass("lyric-row-finished").removeClass("lyric-current").find(".lyric-finished").width("0");
+                        } else {
+                            $(this).removeClass("lyric-row-finished lyric-current").find(".lyric-finished").width(0);
+                        }
+                    });
+                }, _this.frequence);
+            },
+            error: function (error) {
+                $(".lyric-container").html("<h3>歌词载入失败,服务器返回: <br>" + error.status + " " + error.statusText + "</h3>");
+            }
         });
     }
 
