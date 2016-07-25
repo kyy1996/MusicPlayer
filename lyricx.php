@@ -2,9 +2,10 @@
 
 class MusicAPIUtils
 {
-    var $API_LIST = "http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&pn=0&rn=5&rformat=json&encoding=utf8&all=";
+    var $API_LIST = "http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&pn=0&rn=1&rformat=json&encoding=utf8&all=";
     var $API_LRC = "http://newlyric.kuwo.cn/newlyric.lrc?";
     var $API_LRC_RID = "http://player.kuwo.cn/webmusic/st/getNewMuiseByRid?rid=";
+    var $API_SEARCH = 'http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&rformat=json&encoding=utf8&all={0}&pn={1}&rn={2}';
 
     function __construct()
     {
@@ -13,8 +14,8 @@ class MusicAPIUtils
     public function getMusicRid($name)
     {
         $result = $this->getMusicList($name);
-        if (@$result[0]['MUSICRID'])
-            return $result[0]['MUSICRID'];
+        if (@$result['abslist'][0]['MUSICRID'])
+            return $result['abslist'][0]['MUSICRID'];
         return false;
     }
 
@@ -23,17 +24,19 @@ class MusicAPIUtils
      * @param $name
      * @return bool|array
      */
-    public function getMusicList($name)
+    public function getMusicList($name, $page = 0, $page_max = 10)
     {
-        $url = $this->API_LIST . urlencode($name);
+        $url = str_replace($this->API_SEARCH, '{0}', urlencode($name));
+        $url = str_replace($url, '{1}', $page);;
+        $url = str_replace($url, '{2}', $page_max);;
         $result = file_get_contents($url);
         $result = str_replace("'", "\"", $result);
         $list = json_decode($result, true);
-        if (!@$list['abslist'] || !@$list['abslist'][0]) {
+        if (!@$list) {
             return false;
         }
 
-        return $list['abslist'];
+        return $list;
     }
 
     /**
