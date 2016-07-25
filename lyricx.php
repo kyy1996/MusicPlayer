@@ -4,7 +4,7 @@ class MusicAPIUtils
 {
     var $API_LIST = "http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&pn=0&rn=1&rformat=json&encoding=utf8&all=";
     var $API_LRC = "http://newlyric.kuwo.cn/newlyric.lrc?";
-    var $API_LRC_RID = "http://player.kuwo.cn/webmusic/st/getNewMuiseByRid?rid=";
+    var $API_MUSIC_INFO = "http://player.kuwo.cn/webmusic/st/getNewMuiseByRid?rid=";
     var $API_SEARCH = 'http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&rformat=json&encoding=utf8&all={0}&pn={1}&rn={2}';
     var $API_PLAY = "http://antiserver.kuwo.cn/anti.s?type=convert_url&format=aac|mp3&response=url&rid=";
 
@@ -30,7 +30,9 @@ class MusicAPIUtils
     /**
      * 得到歌曲列表
      * @param $name
-     * @return bool|array
+     * @param int $page
+     * @param int $page_max
+     * @return array|bool
      */
     public function getMusicList($name, $page = 0, $page_max = 10)
     {
@@ -49,7 +51,7 @@ class MusicAPIUtils
 
     public function getArtistImg($music_rid)
     {
-        $url = $this->API_LRC_RID . $music_rid;
+        $url = $this->API_MUSIC_INFO . $music_rid;
         $xml = file_get_contents($url);
 
         //查找歌手大图
@@ -64,6 +66,7 @@ class MusicAPIUtils
     /**
      * 得到歌词内容
      * @param $rid
+     * @param bool $is_lrcx
      * @return bool|string
      */
     public function getLyric($rid, $is_lrcx = true)
@@ -83,7 +86,7 @@ class MusicAPIUtils
      */
     public function getLyricRid($music_rid)
     {
-        $url = $this->API_LRC_RID . $music_rid;
+        $url = $this->API_MUSIC_INFO . $music_rid;
         $xml = file_get_contents($url);
         //查找逐字歌词
         preg_match("/<lyric_zz>(.+)<\/lyric_zz>/i", $xml, $result);
@@ -156,4 +159,4 @@ $img = $Lyric->getArtistImg($music_rid);
 echo("<br>" . "<img src='{$img[0]}'>");
 echo("<br>" . "<img src='{$img[1]}'>");
 $aac = $Lyric->getPlayUrl($music_rid);
-echo("<br><audio src='{$aac}'></audio>");
+echo("<br><audio src='{$aac}'></audio><p>{$music_rid}</p>");
