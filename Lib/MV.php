@@ -22,14 +22,16 @@ class MV
 
     /**
      * @param $music_rid
+     * @param string $br
      * @return array|bool
      */
-    public function getMV($music_rid)
+    public function getMV($music_rid, $br = "MP4")
     {
         $audio_brs = ['128kmp3', '192kmp3', '320kmp3', '2000kflac'];
         $audio_formats = ['MP3128', 'MP3192', 'MP3H', 'AL'];
         $video_formats = ['MP4L', 'MP4'];
-        $br = $video_formats[1];
+        if (!in_array($br, $video_formats))
+            $br = $video_formats[1];
         $music_rid = str_replace("MUSIC_", "", $music_rid);
         $url = "user=359307055300426&prod=kwplayer_ar_6.4.8.0&corp=kuwo&source=kwplayer_ar_6.4.8.0_kw.apk&p2p=1&type=convert_mv_url2&rid={$music_rid}&quality={$br}&network=WIFI&mode=audition&format=mp4&br=&sig=";
         $url = 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' . $this->DES->base64_encrypt($url);
