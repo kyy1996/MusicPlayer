@@ -55,15 +55,15 @@ class Controller
         $this->success($return);
     }
 
-    public function getLyric($music_rid)
+    public function getLyric($music_rid, $lrcx = true)
     {
-        $l_rid = $this->API->getLyricRid($music_rid, true);
+        $l_rid = $this->API->getLyricRid($music_rid, !!$lrcx);
         $lrc = $this->API->getLyric($l_rid);
         if ($lrc) $this->error("Error load lrc");
         $this->success($lrc);
     }
 
-    public function success($data = "", $url = "")
+    private function success($data = "", $url = "")
     {
         $status = 1;
         $return = compact($status, $data, $url);
@@ -71,7 +71,7 @@ class Controller
         $this->ajaxReturn($return);
     }
 
-    public function error($data = "", $url = "")
+    private function error($data = "", $url = "")
     {
         $status = 0;
         $return = compact($status, $data, $url);
@@ -84,9 +84,13 @@ class Controller
         echo(json_encode($data));
         exit();
     }
+
+    function __call($name, $arguments)
+    {
+        $this->error("Call an undefined method {$name}.");
+    }
 }
 
 $controller = new Controller();
-
-$ref = new ReflectionObject($controller);
-var_dump($ref->getMethods());
+$action = "get" . $_REQUEST['action'];
+call_user_func_array($controller->$action, []);
