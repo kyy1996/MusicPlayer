@@ -82,24 +82,24 @@ class MusicAPIUtils
     /**
      * 得到歌词Rid， 优先获取lrcx歌词rid
      * @param $music_rid
-     * @return bool|array
+     * @param bool $lrcx
+     * @return array|bool
      */
-    public function getLyricRid($music_rid)
+    public function getLyricRid($music_rid, $lrcx = true)
     {
         $url = $this->API_MUSIC_INFO . $music_rid;
         $xml = file_get_contents($url);
-        //查找逐字歌词
-        preg_match("/<lyric_zz>(.+)<\/lyric_zz>/i", $xml, $result);
-        $lyricx = true;
-        //逐字歌词不存在则查找普通歌词
-        if (!@$result[1]) {
-            $lyricx = false;
+        if ($lrcx) {
+            //查找逐字歌词
+            preg_match("/<lyric_zz>(.+)<\/lyric_zz>/i", $xml, $result);
+        } else {
+            //逐字歌词不存在则查找普通歌词
             preg_match("/<lyric>(.+)<\/lyric>/i", $xml, $result);
         }
         if (!@$result[1])
             return false;
 
-        return ["is_lrcx" => $lyricx, "lyric_rid" => $result[1]];
+        return ["is_lrcx" => $lrcx, "lyric_rid" => $result[1]];
     }
 
     /**
@@ -119,7 +119,7 @@ class MusicAPIUtils
         $str = substr($str, $index + 4);
         $str = zlib_decode($str);
         //如果不是lrcx则跳过解密，直接输出
-        if (!$lyricx) return iconv("UTF-8", $charset . "//IGNORE", $str);
+        if (!$lyricx) return iconv($charset . "//IGNORE", "UTF-8", $str);
 
         //是lrcx格式歌词需要先解密
         $str = base64_decode($str);
@@ -142,21 +142,22 @@ class MusicAPIUtils
         }
         $output = implode("", $output);
         $output = iconv($charset, "UTF-8//IGNORE", $output);
-        return iconv("UTF-8", $charset . "//IGNORE", $output);
+        return $output;
     }
 }
 
 $Lyric = new MusicAPIUtils();
 $name = @$_REQUEST['name'] ? $_REQUEST['name'] : "刺藤";
+$lrcx = !!@$_REQUEST['lrcx'];
 $music_rid = $Lyric->getMusicRid($name);
-$lyric = $Lyric->getLyricRid($music_rid);
+$lyric = $Lyric->getLyricRid($music_rid, $lrcx);
 $str_lrc = $Lyric->getLyric($lyric['lyric_rid'], $lyric['is_lrcx']);
 
-header("Content-type:text/html;charset=gb18030");
+header("Content-type:text/html;charset=utf-8");
 echo("<pre>$str_lrc</pre>");
 
 $img = $Lyric->getArtistImg($music_rid);
 echo("<br>" . "<img src='{$img[0]}'>");
 echo("<br>" . "<img src='{$img[1]}'>");
 $aac = $Lyric->getPlayUrl($music_rid);
-echo("<br><audio src='{$aac}'></audio><p>{$music_rid}</p>");
+echo("<br><audio autoplay='autoplay' controls='controls' src='{$aac}'></audio><p>{$music_rid}</p>");
