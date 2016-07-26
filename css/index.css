@@ -148,20 +148,19 @@ a > * {
     display: flex;
 }
 
-.controller-btn > div {
-    flex: 1;
-}
-
 .left-btn-group {
     text-align: left;
+    flex: 0 1 auto;
 }
 
 .center-btn-group {
     text-align: center;
+    flex: 1;
 }
 
 .right-btn-group {
     text-align: right;
+    flex: 0 1 auto;
 }
 
 .controller-btn a {
@@ -382,9 +381,8 @@ a:hover .mode-play-single > i.icon-one {
     background-color: rgba(0, 0, 0, 0.6);
     color: rgba(255, 255, 255, 1);
     padding: 10px;
-    transition: none;
+    transition-property: left, top, width;
     display: none;
-    overflow: hidden;
 }
 
 .play-list h4 {
@@ -458,13 +456,23 @@ a:hover .mode-play-single > i.icon-one {
     line-height: 1;
 }
 
-@media (min-width: 561px) and (min-height: 561px) {
+@media (min-width: 661px) and (min-height: 561px) {
     .mobile-only {
         display: none !important;
     }
 }
 
-@media (max-width: 560px),(max-height: 560px) {
+@media (max-width: 1099px) {
+    .left-btn-group {
+        display: none;
+    }
+
+    .controller-btn > div.right-btn-group {
+        flex: 0 1 auto;
+    }
+}
+
+@media (max-width: 660px),(max-height: 560px) {
     .mobile-hidden {
         display: none;
     }

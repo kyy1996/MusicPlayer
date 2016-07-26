@@ -144,17 +144,125 @@ class DES
 
     function __construct()
     {
-        $this->SECRET_KEY = unpack("C*", $this->SECRET_KEY);
+//        $this->SECRET_KEY = unpack("C*", $this->SECRET_KEY);
+    }
+
+    public function bit_transform($arr_int, $n, $l)
+    {
+        $l2 = 0;
+        for ($i = 0; $i < $n; $i++) {
+            if ($arr_int[$i] < 0 || !bccomp($l & $this->arrayMask[$arr_int[$i]], 0))
+                continue;
+            $l2 |= $this->arrayMask[$i];
+        }
+        return $l2;
+    }
+
+    public function sub_keys($l, &$longs, $n)
+    {
+        $l2 = $this->bit_transform($this->arrayPC_1, 56, $l);
+        for ($i = 0; $i < 16; $i++) {
+            $l2 = (($l2 & $this->arrayLsMask[$this->arrayLs[$i]]) << 28 -
+                $this->arrayLs[$i] | ($l2 & ~$this->arrayLsMask[$this->arrayLs[$i]]) >> $this->arrayLs[$i]);
+            $longs[$i] = $this->bit_transform($this->arrayPC_2, 64, $l2);
+        }
+
+        $j = 0;
+        while ($n == 1 and $j < 8) {
+            $l3 = $longs[$j];
+            $longs[$j] = $longs[15 - $j];
+            $longs[15 - $j] = $l3;
+            $j += 1;
+        }
+        return $longs;
+    }
+
+    public function DES64($longs, $l)
+    {
+        $pR = array_fill(0, 8, 0);
+        $pSource = [0, 0];
+        $out = $this->bit_transform($this->arrayIP, 64, $l);
+        $pSource[0] = 0xFFFFFFFF & $out;
+        $pSource[1] = (-4294967296 & $out) >> 32;
+        for ($i = 0; $i < 16; $i++) {
+            $R = $pSource[1];
+            $R = $this->bit_transform($this->arrayE, 64, $R);
+            $R ^= $longs[$i];
+            for ($j = 0; $j < 8; $j++)
+                $pR[$j] = 255 & $R >> $j * 8;
+            $SOut = 0;
+            for ($sbi = 7; $sbi >= 0; $sbi--) {
+                $SOut <<= 4;
+                $SOut |= $this->matrixNSBox[$sbi][$pR[$sbi]];
+            }
+
+            $R = $this->bit_transform($this->arrayP, 32, $SOut);
+            $L = $pSource[0];
+            $pSource[0] = $pSource[1];
+            $pSource[1] = $L ^ $R;
+        }
+        $pSource = array_reverse($pSource, false);
+        $pSource = array_values($pSource);
+        $out = -4294967296 & $pSource[1] << 32 | 0xFFFFFFFF & $pSource[0];
+        $out = $this->bit_transform($this->arrayIP_1, 64, $out);
+        return $out;
     }
 
     public function encrypt($msg, $key = "")
     {
         if (!$key) $key = $this->SECRET_KEY;
+
+        $msg = array_values(unpack("C*", $msg));
+        $key = array_values(unpack("C*", $key));
+
+
         // 处理密钥块
+
         $l = 0;
-        for ($i = 0; $i <= 8; $i++)
+
+        for ($i = 0; $i < 8; $i++)
             $l = $l | ($key[$i] << ($i * 8));
-        $j = floor(count($msg) / 8);
+        $j = (int)(count($msg) / 8);
+
+        // arrLong1 存放的是转换后的密钥块, 在解密时只需要把这个密钥块反转就行了
+        $arrLong1 = array_fill(0, 16, 0);
+        $this->sub_keys($l, $arrLong1, 0);
+        // arrLong2 存放的是前部分的明文
+        $arrLong2 = array_fill(0, $j, 0);
+
+        for ($m = 0; $m < $j; $m++)
+            for ($n = 0; $n < 8; $n++)
+                $arrLong2[$m] |= $msg[$n + $m * 8] << $n * 8;
+        // 用于存放密文
+        $arrLong3 = array_fill(0, floor((1 + 8 * ($j + 1)) / 8), 0);
+        for ($i1 = 0; $i1 < $j; $i1++)
+            $arrLong3[$i1] = $this->DES64($arrLong1, $arrLong2[$i1]);
+
+        // 保存多出来的字节
+        $arrByte1 = array_slice($msg, $j * 8);
+        $l2 = 0;
+        for ($i1 = 0; $i1 < count($msg) % 8; $i1++)
+            $l2 |= $arrByte1[$i1] << $i1 * 8;
+
+        // 计算多出的那一位(最后一位)
+        $arrLong3[$j] = $this->DES64($arrLong1, $l2);
+
+        // 将密文转为字节型
+        $arrByte2 = array_fill(0, (8 * count($arrLong3)), 0);
+        $i4 = 0;
+        foreach ($arrLong3 as $l3)
+            for ($i6 = 0; $i6 < 8; $i6++) {
+                $arrByte2[$i4] = pack("C*", (255 & $l3 >> $i6 * 8));
+                $i4 += 1;
+            }
+        $arrByte2 = implode("", $arrByte2);
+        return $arrByte2;
     }
 
+    public function base64_encrypt($msg)
+    {
+        $b1 = $this->encrypt($msg);
+        $s = base64_encode($b1);
+        return str_replace("\n", "", $s);
+    }
 }
