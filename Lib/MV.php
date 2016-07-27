@@ -6,7 +6,7 @@
  * Date: 16-7-26
  * Time: 下午12:34
  */
-require("DES.php");
+require_once("DES.php");
 
 class MV
 {
@@ -34,8 +34,9 @@ class MV
             $br = $video_formats[1];
         $music_rid = str_replace("MUSIC_", "", $music_rid);
         $url = "user=359307055300426&prod=kwplayer_ar_6.4.8.0&corp=kuwo&source=kwplayer_ar_6.4.8.0_kw.apk&p2p=1&type=convert_mv_url2&rid={$music_rid}&quality={$br}&network=WIFI&mode=audition&format=mp4&br=&sig=";
-        $url = 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' . $this->DES->base64_encrypt($url);
 
+        $url = 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' . $this->DES->base64_encrypt($url);
+        var_dump($url);
         $content = @file_get_contents($url);
         if (!$content) return false;
         $preg = "/(\w+)=(.+)\n/i";

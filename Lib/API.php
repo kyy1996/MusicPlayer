@@ -6,6 +6,9 @@
  * Date: 16-7-26
  * Time: 下午12:44
  */
+
+require_once "DES.php";
+
 class API
 {
     var $API_LIST = "http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&pn=0&rn=1&rformat=json&encoding=utf8&all=";
@@ -17,6 +20,7 @@ class API
 
     function __construct()
     {
+        $this->DES = new DES();
 
     }
 
@@ -32,16 +36,27 @@ class API
         $audio_brs = ['128kmp3', '192kmp3', '320kmp3', '2000kflac'];
         $audio_formats = ['MP3128', 'MP3192', 'MP3H', 'AL'];
         $video_formats = ['MP4L', 'MP4'];
-
-        $song_formats = explode("|", trim($music['formats']));
+        print_r($music);
+//        $song_formats = explode("|", trim($music['formats']));
         if ($mv) {
-            if (in_array($audio_formats[3], $song_formats)) $br = $audio_formats[3];
-            if (in_array($audio_formats[2], $song_formats)) $br = $audio_formats[2];
-            if (in_array($audio_formats[1], $song_formats)) $br = $audio_formats[1];
-            if (in_array($audio_formats[0], $song_formats)) $br = $audio_formats[0];
-            $url = "user=359307055300426&prod=kwplayer_ar_6.4.8.0&corp=kuwo&source=kwplayer_ar_6.4.8.0_kw.apk&p2p=1&type=convert_mv_url2&rid={$music['rid']}&quality={$br}&network=WIFI&mode=audition&format=mp4&br=&sig=";
+            /*if (in_array($audio_formats[3], $song_formats)) $br = $audio_formats[3];
+            else if (in_array($audio_formats[2], $song_formats)) $br = $audio_formats[2];
+            else if (in_array($audio_formats[1], $song_formats)) $br = $audio_formats[1];
+            else $br = $audio_formats[0];*/
+            $br = $video_formats[1];
+            $url = "user=359307055300426&prod=kwplayer_ar_6.4.8.0&corp=kuwo&source=kwplayer_ar_6.4.8.0_kw.apk&p2p=1&type=convert_mv_url2&rid={$music['music_id']}&quality={$br}&network=WIFI&mode=audition&format=mp4&br=&sig=";
+        } else {
+            $br = $audio_formats[3];
+//            if (in_array($video_formats[1], $song_formats)) $br = $video_formats[1];
+            $url = "user=359307055300426&prod=kwplayer_ar_6.4.8.0&corp=kuwo&source=kwplayer_ar_6.4.8.0_kw.apk&p2p=1&type=convert_url2&br={$br}&format=mp3|flac|aac&sig=0&rid={$music['music_id']}&network=WIFI";
         }
+        var_dump($url);
+        $url = 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' . $this->DES->base64_encrypt($url);
 
+        $content = file_get_contents($url);
+        if (!$content) return false;
+
+        return $content;
     }
 
     public function getArtPic($artist_name)
@@ -58,7 +73,7 @@ class API
         $url = $this->API_MUSIC_INFO . $music_rid;
         $content = file_get_contents($url);
 
-        $reg = "/<(\w+)>.+</\w+>/i";
+        $reg = "/<(\w+)>(.+)<\/\w+>/i";
         preg_match_all($reg, $content, $music);
         if (!$music) return false;
         return array_combine($music[1], $music[2]);

@@ -6,7 +6,7 @@
  * Date: 16-7-26
  * Time: 上午10:31
  */
-require "API.php";
+require_once "API.php";
 
 class Lyric
 {

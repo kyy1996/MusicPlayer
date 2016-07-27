@@ -1,13 +1,14 @@
 <?php
-require("Lib/API.php");
-/*require("Lib/MV.php");
-require("Lib/Lyric.php");*/
+require_once("Lib/API.php");
+require("Lib/MV.php");
+require("Lib/Lyric.php");
 error_reporting(E_ALL);
 ini_set("display_errors", "on");
-//$Lyric = new Lyric();
+$Lyric = new Lyric();
 
-/*
+$API = new API();
 $lrcx = !!@$_REQUEST['lrcx'];
+$name = $_REQUEST['name'];
 $music_rid = $API->getMusicRid($name);
 $lyric = $API->getLyricRid($music_rid, $lrcx);
 $str_lrc = $API->getLyric($lyric['lyric_rid']);
@@ -23,7 +24,7 @@ echo("{$music_rid}\n");
 
 $MV = new MV();
 $mv = $MV->getMV($music_rid)['url'];
-echo("<video controls='controls' autoplay='autoplay' src='{$mv}'></video>");*/
+echo("<video controls='controls' autoplay='autoplay' src='{$mv}'></video>");
 
 class Controller
 {
@@ -63,24 +64,53 @@ class Controller
         $this->success($lrc);
     }
 
-    private function success($data = "", $url = "")
+    public function getMv($music_rid)
+    {
+        /*$music = $this->API->getMusic($music_rid);
+        $url = $this->API->getSongUrl($music, true);*/
+        $MV = new MV();
+        $url = $MV->getMV($music_rid);
+        if ($url)
+            $this->success($url);
+        else
+            $this->error("Error getting MV url");
+    }
+
+    public function getMusicRid($name)
+    {
+        $music = $this->API->getMusicRid($name);
+
+        if ($music)
+            $this->success($music);
+        else
+            $this->error("Error getting music info");
+    }
+
+    public function getMusicList($name)
+    {
+        $list = $this->API->getMusicList($name);
+        var_dump($list);
+        $this->success($list);
+    }
+
+    public function success($data = "", $url = "")
     {
         $status = 1;
-        $return = compact($status, $data, $url);
-
+        $return = compact("status", "data", "url");
         $this->ajaxReturn($return);
     }
 
-    private function error($data = "", $url = "")
+    public function error($data = "", $url = "")
     {
         $status = 0;
-        $return = compact($status, $data, $url);
+        $return = compact("status", "data", "url");
 
         $this->ajaxReturn($return);
     }
 
     private function ajaxReturn($data)
     {
+        header("Content-Type:text/html;charset=utf-8");
         echo(json_encode($data));
         exit();
     }
@@ -91,6 +121,14 @@ class Controller
     }
 }
 
+/*ob_start();
 $controller = new Controller();
-$action = "get" . $_REQUEST['action'];
-call_user_func_array($controller->$action, []);
+$action = "get" . ($_REQUEST['action']);
+$param = $_REQUEST;
+array_shift($param);
+
+try {
+    call_user_func_array([$controller, $action], $param);
+} catch (Exception $e) {
+    $controller->error($e->getMessage());
+}*/
