@@ -78,11 +78,12 @@ class Controller
     public function getSong($music_rid)
     {
         $music = $this->API->getMusic($music_rid);
+        var_dump($music);
         $url = $this->API->getSongUrl($music, false);
         if ($url)
             $this->success($url);
         else
-            $this->error("Error getting MV url");
+            $this->error("Error getting Song url");
     }
 
     public function getMusicRid($name)

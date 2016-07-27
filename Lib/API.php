@@ -52,7 +52,10 @@ class API
         $url = 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' . $this->DES->base64_encrypt($url);
         $content = @file_get_contents($url);
         if (!$content) return false;
-
+        $content = explode("\r\\n", $content);
+        $reg = " /(\w +)=(.+)/i";
+        preg_match_all($reg, $content, $music);
+        $content = array_combine($music[1], $music[2]);
         return $content;
     }
 
@@ -70,7 +73,7 @@ class API
         $url = $this->API_MUSIC_INFO . $music_rid;
         $content = @file_get_contents($url);
 
-        $reg = "/<(\w+)>(.+)<\/\w+>/i";
+        $reg = " /<(\w +)>(.+)<\/\w +>/i";
         preg_match_all($reg, $content, $music);
         if (!$music) return false;
         return array_combine($music[1], $music[2]);
@@ -93,7 +96,7 @@ class API
      */
     public function getMusicList($name, $page = 0, $page_max = 10)
     {
-        $url = str_replace('all={0}', "all=" . urlencode($name), $this->API_SEARCH);
+        $url = str_replace('all={0}', "all = " . urlencode($name), $this->API_SEARCH);
         $url = str_replace('{1}', $page, $url);;
         $url = str_replace('{2}', $page_max, $url);
         $result = @file_get_contents($url);
