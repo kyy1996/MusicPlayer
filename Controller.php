@@ -67,10 +67,18 @@ class Controller
 
     public function getMv($music_rid)
     {
-        /*$music = $this->API->getMusic($music_rid);
-        $url = $this->API->getSongUrl($music, true);*/
-        $MV = new MV();
-        $url = $MV->getMV($music_rid);
+        $music = $this->API->getMusic($music_rid);
+        $url = $this->API->getSongUrl($music, true);
+        if ($url)
+            $this->success($url);
+        else
+            $this->error("Error getting MV url");
+    }
+
+    public function getSong($music_rid)
+    {
+        $music = $this->API->getMusic($music_rid);
+        $url = $this->API->getSongUrl($music, false);
         if ($url)
             $this->success($url);
         else
@@ -90,7 +98,6 @@ class Controller
     public function getMusicList($name)
     {
         $list = $this->API->getMusicList($name);
-        var_dump($list);
         $this->success($list);
     }
 

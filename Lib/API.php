@@ -36,7 +36,6 @@ class API
         $audio_brs = ['128kmp3', '192kmp3', '320kmp3', '2000kflac'];
         $audio_formats = ['MP3128', 'MP3192', 'MP3H', 'AL'];
         $video_formats = ['MP4L', 'MP4'];
-        print_r($music);
 //        $song_formats = explode("|", trim($music['formats']));
         if ($mv) {
             /*if (in_array($audio_formats[3], $song_formats)) $br = $audio_formats[3];
@@ -50,9 +49,8 @@ class API
 //            if (in_array($video_formats[1], $song_formats)) $br = $video_formats[1];
             $url = "user=359307055300426&prod=kwplayer_ar_6.4.8.0&corp=kuwo&source=kwplayer_ar_6.4.8.0_kw.apk&p2p=1&type=convert_url2&br={$br}&format=mp3|flac|aac&sig=0&rid={$music['music_id']}&network=WIFI";
         }
-        var_dump($url);
         $url = 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' . $this->DES->base64_encrypt($url);
-
+        var_dump($url);
         $content = file_get_contents($url);
         if (!$content) return false;
 
