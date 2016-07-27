@@ -28,7 +28,7 @@ class API
     {
         $url = $this->API_PLAY . $music_rid;
 
-        return file_get_contents($url);
+        return @file_get_contents($url);
     }
 
     public function getSongUrl($music, $mv = false)
@@ -50,8 +50,7 @@ class API
             $url = "user=359307055300426&prod=kwplayer_ar_6.4.8.0&corp=kuwo&source=kwplayer_ar_6.4.8.0_kw.apk&p2p=1&type=convert_url2&br={$br}&format=mp3|flac|aac&sig=0&rid={$music['music_id']}&network=WIFI";
         }
         $url = 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' . $this->DES->base64_encrypt($url);
-        var_dump($url);
-        $content = file_get_contents($url);
+        $content = @file_get_contents($url);
         if (!$content) return false;
 
         return $content;
@@ -60,7 +59,7 @@ class API
     public function getArtPic($artist_name)
     {
         $url = $this->API_ART_PIC . urlencode($artist_name);
-        $content = file_get_contents($url);
+        $content = @file_get_contents($url);
         if (!$content) return false;
         $content = trim($content);
         return explode("\n", $content);
@@ -69,7 +68,7 @@ class API
     public function getMusic($music_rid)
     {
         $url = $this->API_MUSIC_INFO . $music_rid;
-        $content = file_get_contents($url);
+        $content = @file_get_contents($url);
 
         $reg = "/<(\w+)>(.+)<\/\w+>/i";
         preg_match_all($reg, $content, $music);
@@ -97,7 +96,7 @@ class API
         $url = str_replace('all={0}', "all=" . urlencode($name), $this->API_SEARCH);
         $url = str_replace('{1}', $page, $url);;
         $url = str_replace('{2}', $page_max, $url);
-        $result = file_get_contents($url);
+        $result = @file_get_contents($url);
         $result = str_replace("'", "\"", $result);
         $list = json_decode($result, true);
         if (!@$list)
