@@ -1,10 +1,11 @@
 <?php
 require_once("Lib/API.php");
-require("Lib/MV.php");
-require("Lib/Lyric.php");
+/*require("Lib/MV.php");
+require("Lib/Lyric.php");*/
 error_reporting(E_ALL);
 ini_set("display_errors", "on");
-$Lyric = new Lyric();
+
+/*$Lyric = new Lyric();
 
 $API = new API();
 $lrcx = !!@$_REQUEST['lrcx'];
@@ -12,7 +13,7 @@ $name = $_REQUEST['name'];
 $music_rid = $API->getMusicRid($name);
 $lyric = $API->getLyricRid($music_rid, $lrcx);
 $str_lrc = $API->getLyric($lyric['lyric_rid']);
-$str_lrc = $Lyric->decodeLyric($str_lrc);
+$str_lrc = $Lyric->decodeLyric($str_lrc, $lrcx);
 echo("<pre>$str_lrc</pre>");
 
 $img = $API->getArtistImg($music_rid);
@@ -21,10 +22,10 @@ echo("<br>" . "<img src='{$img[1]}'>");
 $aac = $API->getPlayUrl($music_rid);
 echo("<br><audio autoplay='autoplay' controls='controls' src='{$aac}'></audio>");
 echo("{$music_rid}\n");
-
 $MV = new MV();
-$mv = $MV->getMV($music_rid)['url'];
-echo("<video controls='controls' autoplay='autoplay' src='{$mv}'></video>");
+$mv = $MV->getMV("MUSIC_4224167")['url'];
+$mv = $MV->getMV("MUSIC_751532")['url'];
+echo("<video controls='controls' autoplay='autoplay' src='{$mv}'></video>");*/
 
 class Controller
 {
@@ -121,7 +122,7 @@ class Controller
     }
 }
 
-/*ob_start();
+ob_start();
 $controller = new Controller();
 $action = "get" . ($_REQUEST['action']);
 $param = $_REQUEST;
@@ -131,4 +132,4 @@ try {
     call_user_func_array([$controller, $action], $param);
 } catch (Exception $e) {
     $controller->error($e->getMessage());
-}*/
+}
